@@ -1,7 +1,8 @@
 import asyncio
 import logging
-from MongoDB import start_mongodb
+
 from abuse import get_abuses
+from MongoDB import start_mongodb
 
 
 async def main():
