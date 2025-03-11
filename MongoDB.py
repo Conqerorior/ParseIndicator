@@ -33,7 +33,8 @@ async def insert_abuse_collection(record):
 
 
 async def insert_rss_collection(article):
-    existing = await rss_collection.find_one({"title": article["title"], "link": article["link"], "published": article["published"]})
+    existing = await rss_collection.find_one({'title': article['title'], 'link': article['link'],
+                                              'published': article['published']})
     if not existing:
         await rss_collection.insert_one(article)
         logging.info(f'Добавлена новая запись: {article['title']}')

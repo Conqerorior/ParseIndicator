@@ -8,13 +8,13 @@ from Constants import LEN_RSS_RECORDS, RSS_FEEDS_URLS
 from MongoDB import insert_rss_collection, show_collection
 
 
-
 async def get_rss_feeds():
     for rss_feed_url in RSS_FEEDS_URLS:
         articles = await get_rss_feed_by_url(rss_feed_url)
         for article in articles:
             await insert_rss_collection(article)
         await show_collection(LEN_RSS_RECORDS)
+
 
 async def get_rss_feed_by_url(feed_url):
     response = requests.get(feed_url)
