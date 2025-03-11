@@ -10,9 +10,12 @@ MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_NAME = os.getenv('MONGODB_NAME')
 ABUSE_COLLECTION = os.getenv('ABUSE_COLLECTION')
 
+RSS_COLLECTION = os.getenv('RSS_COLLECTION')
+
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
 database = client.get_database(MONGODB_NAME)
 abuse_collection = database.get_collection(ABUSE_COLLECTION)
+rss_collection = database.get_collection(RSS_COLLECTION)
 
 
 async def start_mongodb():
@@ -27,6 +30,15 @@ async def insert_abuse_collection(record):
         logging.info(f'Добавлена новая запись: {record['_id']}')
     else:
         logging.info(f'Запись {record['_id']} уже существует')
+
+
+async def insert_rss_collection(article):
+    existing = await rss_collection.find_one({"title": article["title"], "link": article["link"], "published": article["published"]})
+    if not existing:
+        await rss_collection.insert_one(article)
+        logging.info(f'Добавлена новая запись: {article['title']}')
+    else:
+        logging.info(f'Запись {article['title']} уже существует')
 
 
 async def show_collection(length):

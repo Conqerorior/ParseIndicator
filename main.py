@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from abuse import get_abuses
+from rss_feeds import get_rss_feeds
 from MongoDB import start_mongodb
 
 
@@ -9,8 +10,8 @@ async def main():
     await start_mongodb()
     logging.warning("Приложение запущено")
     await get_abuses()
-
+    await get_rss_feeds()
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())

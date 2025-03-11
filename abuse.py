@@ -5,8 +5,8 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from MongoDB import insert_abuse_collection, show_collection
 from Constants import LEN_ABUSE_RECORDS
+from MongoDB import insert_abuse_collection, show_collection
 
 load_dotenv()
 
@@ -30,8 +30,7 @@ async def get_abuses():
         for record in result['data']:
             await insert_abuse_collection(record)
 
-        logging.warning(f'Записано {len(result)} записей в базу')
-        print(json.dumps(result, indent=4, ensure_ascii=False))
+        logging.info(f'Записано {len(result)} записей в базу')
     else:
         logging.error(f"Ошибка API: {response.status_code}, {response.text}")
 
