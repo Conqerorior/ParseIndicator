@@ -3,6 +3,7 @@ charset-normalizer==3.4.1
 dnspython==2.7.0
 flake8==7.1.2
 idna==3.10
+isort==6.0.1
 mccabe==0.7.0
 motor==3.7.0
 pycodestyle==2.12.1
@@ -10,3 +11,4 @@ pyflakes==3.2.0
 pymongo==4.11.2
 python-dotenv==1.0.1
 requests==2.32.3
+urllib3==2.3.0
