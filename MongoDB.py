@@ -9,12 +9,13 @@ load_dotenv()
 MONGODB_URI = os.getenv('MONGODB_URI')
 MONGODB_NAME = os.getenv('MONGODB_NAME')
 ABUSE_COLLECTION = os.getenv('ABUSE_COLLECTION')
-
+CIRCL_COLLECTION = os.getenv('CIRCL_COLLECTION')
 RSS_COLLECTION = os.getenv('RSS_COLLECTION')
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
 database = client.get_database(MONGODB_NAME)
 abuse_collection = database.get_collection(ABUSE_COLLECTION)
+circl_collection = database.get_collection(CIRCL_COLLECTION)
 rss_collection = database.get_collection(RSS_COLLECTION)
 
 
@@ -30,6 +31,16 @@ async def insert_abuse_collection(record):
         logging.info(f'Добавлена новая запись: {record['_id']}')
     else:
         logging.info(f'Запись {record['_id']} уже существует')
+
+
+async def insert_circl_collection(record):
+    record['_id'] = record.pop('uuid')
+    existing = await circl_collection.find_one({'_id': record['_id']})
+    if not existing:
+        await circl_collection.insert_one(record)
+        logging.info(f'Добавлена новая запись: {record["_id"]}')
+    else:
+        logging.info(f'Запись {record["_id"]} уже существует')
 
 
 async def insert_rss_collection(article):
