@@ -6,8 +6,11 @@ import motor.motor_asyncio
 load_dotenv()
 
 MONGODB_URI = os.getenv('MONGODB_URI')
-MONGODB_NAME = os.getenv('MONGODB_URI')
-MONGODB_COLLECTION = os.getenv('MONGODB_URI')
+MONGODB_NAME = os.getenv('MONGODB_NAME')
+MONGODB_COLLECTION = os.getenv('MONGODB_COLLECTION')
+print(MONGODB_URI)
+print(MONGODB_NAME)
+print(MONGODB_COLLECTION)
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
 database = client.get_database(MONGODB_NAME)
