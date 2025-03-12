@@ -1,0 +1,2 @@
+# Запуск скрипта каждые 10 минут
+*/10 * * * * python3 /app/run.py >> /var/log/script.log 2>&1
