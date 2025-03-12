@@ -1,8 +1,8 @@
 import logging
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 from Constants import LEN_RSS_RECORDS, RSS_FEEDS_URLS
 from MongoDB import insert_rss_collection, show_collection
