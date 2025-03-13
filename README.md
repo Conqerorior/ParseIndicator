@@ -1,4 +1,4 @@
 # ParseIndicator
 
 # Запуск
-docker-compose up -d
+sudo docker compose up --build -d
