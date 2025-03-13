@@ -46,4 +46,4 @@ async def get_abuses():
 
     logging.info(f'Записано {len(records)} записей в базу')
 
-    # await show_collection(LEN_ABUSE_RECORDS)
+    await show_collection(LEN_ABUSE_RECORDS)
