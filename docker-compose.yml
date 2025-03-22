@@ -5,15 +5,29 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    networks:
+      - my_network
 
   mongo:
     image: mongo
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27016:27017"
+    networks:
+      - my_network
 
   celery:
     build: .
     depends_on:
       - redis
       - mongo
+    environment:
+      PYTHONPATH: /app
+      CELERY_BROKER_URL: redis://redis:6379/0
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    name: my_custom_network 
+    driver: bridge 

@@ -33,14 +33,12 @@ async def insert_abuse_collection(record):
         logging.info(f'Запись {record["_id"]} уже существует')
 
 
-async def insert_circl_collection(record):
+async def insert_circl_collection_if_exist(record):
     record['_id'] = record.pop('uuid')
     existing = await circl_collection.find_one({'_id': record['_id']})
     if not existing:
         await circl_collection.insert_one(record)
         logging.info(f'Добавлена новая запись: {record["_id"]}')
-    else:
-        logging.info(f'Запись {record["_id"]} уже существует')
 
 
 async def insert_rss_collection(article):

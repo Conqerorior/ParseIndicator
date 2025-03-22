@@ -6,4 +6,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["celery", "-A", "celery", "worker", "--loglevel=info"]
+# Копируем скрипт запуска
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Указываем скрипт как точку входа
+ENTRYPOINT ["/start.sh"]

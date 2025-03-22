@@ -3,8 +3,9 @@ import logging
 import os
 
 import aiohttp
+import async_timeout
 from dotenv import load_dotenv
-from Constants import LEN_ABUSE_RECORDS
+from Constants import LEN_ABUSE_RECORDS, TIMEOUT
 from MongoDB import insert_abuse_collection, show_collection, database, ABUSE_COLLECTION
 
 load_dotenv()
@@ -21,16 +22,17 @@ async def fetch_abuses():
     }
 
     async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(URL_ABUSE, headers=headers, json=data) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    logging.error(f"Ошибка API: {response.status}, {await response.text()}")
-                    return None
-        except Exception as e:
-            logging.error(f"Ошибка при запросе: {e}")
-            return None
+        async with async_timeout.timeout(TIMEOUT):
+            try:
+                async with session.post(URL_ABUSE, headers=headers, json=data) as response:
+                    if response.status == 200:
+                        return await response.json()
+                    else:
+                        logging.error(f"Ошибка API: {response.status}, {await response.text()}")
+                        return None
+            except Exception as e:
+                logging.error(f"Ошибка при запросе: {e}")
+                return None
 
 
 async def get_abuses():
@@ -43,4 +45,5 @@ async def get_abuses():
     tasks = [insert_abuse_collection(record) for record in records]
     await asyncio.gather(*tasks)
 
-    await show_collection(abuse_collection, LEN_ABUSE_RECORDS)
+    # Для вывода всей обновлённой коллекции
+    # await show_collection(abuse_collection, LEN_ABUSE_RECORDS)
