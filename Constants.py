@@ -2,7 +2,7 @@ LEN_ABUSE_RECORDS = 100
 LEN_RSS_RECORDS = 100
 LEN_CICLE_RECORDS = 100
 
-TIMEOUT = 10     # Таймаут на получение ответа от сервера (в секундах)
+TIMEOUT = 60     # Таймаут на получение ответа от сервера (в секундах)
 
 RSS_FEEDS_URLS = [
     'https://1275.ru/feed',
