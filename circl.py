@@ -5,7 +5,7 @@ import os
 import aiohttp
 import async_timeout
 from dotenv import load_dotenv
-from Constants import LEN_CICLE_RECORDS, TIMEOUT
+from Constants import LEN_CICLE_RECORDS
 from MongoDB import insert_circl_collection_if_exist, show_collection, database, CIRCL_COLLECTION
 
 load_dotenv()
@@ -17,12 +17,14 @@ circl_collection = database.get_collection(CIRCL_COLLECTION)
 async def fetch_json(session, url):
     try:
         async with session.get(url) as response:
-            async with async_timeout.timeout(TIMEOUT):
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    logging.error(f'Ошибка {response.status} при запросе {url}')
-                    return None
+            if response.status == 200:
+                return await response.json()
+            else:
+                logging.error(f'Ошибка {response.status} при запросе {url}')
+                return None
+    except asyncio.TimeoutError:
+        logging.error(f"Таймаут при запросе: {url}")
+        return None
     except Exception as e:
         logging.error(f'Ошибка запроса {url}: {e}')
         return None
