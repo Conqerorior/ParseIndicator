@@ -28,9 +28,9 @@ async def insert_abuse_collection(record):
     existing = await abuse_collection.find_one({'_id': record['_id']})
     if not existing:
         await abuse_collection.insert_one(record)
-        logging.info(f'Добавлена новая запись: {record['_id']}')
+        logging.info(f'Добавлена новая запись: {record["_id"]}')
     else:
-        logging.info(f'Запись {record['_id']} уже существует')
+        logging.info(f'Запись {record["_id"]} уже существует')
 
 
 async def insert_circl_collection(record):
@@ -48,13 +48,13 @@ async def insert_rss_collection(article):
                                               'published': article['published']})
     if not existing:
         await rss_collection.insert_one(article)
-        logging.info(f'Добавлена новая запись: {article['title']}')
+        logging.info(f'Добавлена новая запись: {article["title"]}')
     else:
-        logging.info(f'Запись {article['title']} уже существует')
+        logging.info(f'Запись {article["title"]} уже существует')
 
 
-async def show_collection(length):
-    cursor = abuse_collection.find({})
+async def show_collection(collection, length):
+    cursor = collection.find({})
     docs = await cursor.to_list(length=length)
     for doc in docs:
         print(doc)

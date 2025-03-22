@@ -1,18 +1,16 @@
 import asyncio
 import logging
 import os
-
 import aiohttp
 from dotenv import load_dotenv
-
-from MongoDB import insert_circl_collection
+from Constants import LEN_ABUSE_RECORDS
+from MongoDB import insert_circl_collection, show_collection, database, CIRCL_COLLECTION
 
 load_dotenv()
 
-
 URL_CIRCL = os.getenv('URL_CIRCL')
 URL_CIRCL_UID = os.getenv('URL_CIRCL_UID')
-
+circl_collection = database.get_collection(CIRCL_COLLECTION)
 
 async def fetch_json(session, url):
     try:
@@ -41,9 +39,7 @@ async def get_circl():
         response = await fetch_json(session, URL_CIRCL)
         if not response:
             return
-
         tasks = [process_circl_entry(session, key) for key in response.keys()]
-
         await asyncio.gather(*tasks)
 
-        logging.info('Все записи обработаны.')
+    await show_collection(circl_collection, LEN_ABUSE_RECORDS)

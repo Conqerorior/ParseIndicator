@@ -4,15 +4,14 @@ import os
 
 import aiohttp
 from dotenv import load_dotenv
-
 from Constants import LEN_ABUSE_RECORDS
-from MongoDB import insert_abuse_collection, show_collection
+from MongoDB import insert_abuse_collection, show_collection, database, ABUSE_COLLECTION
 
 load_dotenv()
 
 AUTHKEY_ABUSE = os.getenv('AUTHKEY_ABUSE')
 URL_ABUSE = os.getenv('URL_ABUSE')
-
+abuse_collection = database.get_collection(ABUSE_COLLECTION)
 
 async def fetch_abuses():
     data = {'query': 'get_iocs'}
@@ -44,6 +43,4 @@ async def get_abuses():
     tasks = [insert_abuse_collection(record) for record in records]
     await asyncio.gather(*tasks)
 
-    logging.info(f'Записано {len(records)} записей в базу')
-
-    await show_collection(LEN_ABUSE_RECORDS)
+    await show_collection(abuse_collection, LEN_ABUSE_RECORDS)

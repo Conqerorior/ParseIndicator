@@ -1,38 +1,39 @@
+import asyncio
 import logging
 from datetime import datetime
-
-import requests
+import aiohttp
 from bs4 import BeautifulSoup
+from Constants import RSS_FEEDS_URLS, LEN_RSS_RECORDS
+from MongoDB import insert_rss_collection, show_collection, rss_collection
 
-from Constants import LEN_RSS_RECORDS, RSS_FEEDS_URLS
-from MongoDB import insert_rss_collection, show_collection
+
+async def process_rss_feed_by_url(session, rss_feed_url):
+    try:
+        async with session.get(rss_feed_url) as response:
+            if response.status == 200:
+                soup = BeautifulSoup(response.content, 'lxml-xml')
+                for item in soup.find_all('item'):
+                    article = {
+                        'title': item.title.text if item.title else None,
+                        'link': item.link.text if item.link else None,
+                        'description': item.description.text if item.description else None,
+                        'published': item.pubDate.text if item.pubDate else None,
+                        'source': rss_feed_url,
+                        'parsed_at': datetime.now()
+                    }
+
+                    await insert_rss_collection(article)
+            else:
+                logging.error(f'Ошибка API: {response.status_code}, {response.text}')
+                return None
+    except Exception as e:
+        logging.error(f'Ошибка запроса {rss_feed_url}: {e}')
+        return None
 
 
 async def get_rss_feeds():
-    for rss_feed_url in RSS_FEEDS_URLS:
-        articles = await get_rss_feed_by_url(rss_feed_url)
-        for article in articles:
-            await insert_rss_collection(article)
-        await show_collection(LEN_RSS_RECORDS)
+    async with aiohttp.ClientSession() as session:
+        tasks = [process_rss_feed_by_url(session, rss_feed_url) for rss_feed_url in RSS_FEEDS_URLS]
+        await asyncio.gather(*tasks)
 
-
-async def get_rss_feed_by_url(feed_url):
-    response = requests.get(feed_url)
-    if response.status_code != 200:
-        logging.error(f'Ошибка API: {response.status_code}, {response.text}')
-    soup = BeautifulSoup(response.content, 'lxml-xml')
-
-    # Парсинг статей
-    articles = []
-    for item in soup.find_all('item'):
-        article = {
-            'title': item.title.text if item.title else None,
-            'link': item.link.text if item.link else None,
-            'description': item.description.text if item.description else None,
-            'published': item.pubDate.text if item.pubDate else None,
-            'source': feed_url,
-            'parsed_at': datetime.now()
-        }
-        articles.append(article)
-
-    return articles
+    await show_collection(rss_collection, LEN_RSS_RECORDS)
