@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-
+import re
 import aiohttp
 import async_timeout
 from dotenv import load_dotenv
@@ -44,7 +44,20 @@ async def get_abuses():
 
     records = result.get('data', [])
 
-    tasks = [insert_abuse_collection(record) for record in records]
+    uuid_pattern = re.compile(
+        r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+        re.IGNORECASE
+    )
+    uuid_no_hyphens = re.compile(
+        r'^[0-9a-f]+$',
+        re.IGNORECASE
+    )
+    tasks = []
+    for record in records:
+        ioc = record.get('ioc')
+        # Отсеиваем ioc с uid-ами
+        if not (bool(uuid_pattern.match(ioc)) or bool(uuid_no_hyphens.match(ioc))):
+            tasks.append(insert_abuse_collection(record))
     await asyncio.gather(*tasks)
 
     # Для вывода всей обновлённой коллекции
